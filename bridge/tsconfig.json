@@ -1,0 +1,18 @@
+{
+    "compilerOptions": {
+        "module": "commonjs",
+        "target": "es5",
+        "strict": true,
+        "allowJs": false,
+        "alwaysStrict": true,
+        "noImplicitAny": true,
+        "removeComments": true,
+        "lib": [
+            "dom",
+            "es2015"
+        ]
+    },
+    "exclude": [
+        "node_modules"
+    ]
+}
