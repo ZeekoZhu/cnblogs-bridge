@@ -5,6 +5,12 @@ const getBlogPostList = () => {
     return posts;
 }
 
+const getBlogTitle = () => {
+    const blogTitleEl = document.querySelector('#Header1_HeaderTitle') as HTMLHeadingElement;
+    localStorage.setItem('app-blog-title', blogTitleEl.innerText);
+    return blogTitleEl.innerText;
+}
+
 const getBlogStats = (): IBlogStats => {
     const statsData = Array.from(document.querySelectorAll('#blog_stats span') as NodeListOf<HTMLSpanElement>)
         .map(span => span.innerText.split(' ')[2])
@@ -17,6 +23,8 @@ const getBlogStats = (): IBlogStats => {
     localStorage.setItem('app-stats', JSON.stringify(stats));
     return stats;
 }
+
+
 
 interface IBlogStats {
     postCnt: number;
@@ -65,3 +73,9 @@ const processPostEl = (postEls: HTMLDivElement[]): IBlogPost[] => {
     }
     return result;
 }
+
+document.addEventListener('DOMContentLoaded', () => {
+    getBlogPostList();
+    getBlogStats();
+    getBlogTitle();
+});
