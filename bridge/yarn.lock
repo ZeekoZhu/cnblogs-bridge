@@ -2,6 +2,20 @@
 # yarn lockfile v1
 
 
+"@types/jquery@^3.3.5":
+  version "3.3.5"
+  resolved "http://registry.npm.taobao.org/@types/jquery/download/@types/jquery-3.3.5.tgz#75cfec8c5ee38355d14296ada7e7e2fb8bd3ac2f"
+
+"@types/lodash.chunk@^4.2.4":
+  version "4.2.4"
+  resolved "http://registry.npm.taobao.org/@types/lodash.chunk/download/@types/lodash.chunk-4.2.4.tgz#d0301e7ed435f7eb60c570e715fb05047256d536"
+  dependencies:
+    "@types/lodash" "*"
+
+"@types/lodash@*":
+  version "4.14.116"
+  resolved "http://registry.npm.taobao.org/@types/lodash/download/@types/lodash-4.14.116.tgz#5ccf215653e3e8c786a58390751033a9adca0eb9"
+
 "@webassemblyjs/ast@1.5.13":
   version "1.5.13"
   resolved "http://registry.npm.taobao.org/@webassemblyjs/ast/download/@webassemblyjs/ast-1.5.13.tgz#81155a570bd5803a30ec31436bc2c9c0ede38f25"
@@ -1321,6 +1335,10 @@ locate-path@^3.0.0:
   dependencies:
     p-locate "^3.0.0"
     path-exists "^3.0.0"
+
+lodash.chunk@^4.2.0:
+  version "4.2.0"
+  resolved "http://registry.npm.taobao.org/lodash.chunk/download/lodash.chunk-4.2.0.tgz#66e5ce1f76ed27b4303d8c6512e8d1216e8106bc"
 
 lodash.debounce@^4.0.8:
   version "4.0.8"

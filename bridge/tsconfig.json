@@ -5,7 +5,8 @@
         "strict": true,
         "allowJs": false,
         "alwaysStrict": true,
-        "removeComments": true,
+        "esModuleInterop": true,
+        "declaration": true,
         "lib": [
             "dom",
             "es2015"

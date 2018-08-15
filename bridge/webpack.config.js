@@ -1,9 +1,8 @@
 module.exports = {
-    mode: "development",
     devtool: false,
     entry: "./bridge.ts",
     output: {
-        filename: "dist/bundle.js"
+        filename: "bundle.js"
     },
     resolve: {
         // Add `.ts` and `.tsx` as a resolvable extension.
@@ -14,5 +13,8 @@ module.exports = {
             // all files with a `.ts` or `.tsx` extension will be handled by `ts-loader`
             { test: /\.tsx?$/, loader: "ts-loader" }
         ]
-    }
+    },
+    externals: {
+        jquery: 'jQuery'
+    },
 };
