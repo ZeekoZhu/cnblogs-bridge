@@ -3,7 +3,7 @@ export interface IBlogStats {
     articleCnt: number;
     commentCnt: number;
 }
-export interface IBlogPost {
+export interface IBlogPostListModel {
     title: string;
     url: string;
     description: string;
@@ -11,6 +11,26 @@ export interface IBlogPost {
     readCnt: number;
     commentCnt: number;
     author: string;
+    id: string;
+}
+export interface IBlogPostDetailModel {
+    title: string;
+    content: string;
+    postTime: Date;
+    readCnt: number;
+    commentCnt: number;
+    diggCnt: number;
+    buryCnt: number;
+    id: string;
+}
+export interface ICommentModel {
+    id: string;
+    reviewerName: string;
+    reviewerId: string;
+    content: string;
+    diggCnt: number;
+    buryCnt: number;
+    time: Date;
 }
 export interface IUserProfile {
     name: string;
@@ -30,13 +50,14 @@ export interface IRecentComment {
     content: string;
     user: string;
 }
-export declare const getBlogPostList: () => IBlogPost[];
+export declare const getBlogPostList: (doc: ParentNode) => IBlogPostListModel[];
 export declare const getBlogTitle: () => string;
 export declare const getSubTitle: () => string;
 export declare const getBlogStats: () => IBlogStats;
+export declare const getPostDetail: (doc: ParentNode) => void;
 export declare class CnblogsBridge {
     data: {
-        posts: IBlogPost[];
+        posts: IBlogPostListModel[];
         stats: IBlogStats;
         title: string;
         subTitle: string;
@@ -55,4 +76,8 @@ export declare class CnblogsBridge {
     getTopViewedPosts(): Promise<IItemWithCount[] | null>;
     getTopCommentPosts(): Promise<IItemWithCount[] | null>;
     getTopDiggPosts(): Promise<IItemWithCount[] | null>;
+    readonly currentPage: number;
+    readonly blogApp: string;
+    getPostListAt(page: number): Promise<IBlogPostListModel[]>;
+    getPostDetail(url: string): void;
 }

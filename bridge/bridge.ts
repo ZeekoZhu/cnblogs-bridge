@@ -7,7 +7,7 @@ export interface IBlogStats {
     commentCnt: number;
 }
 
-export interface IBlogPost {
+export interface IBlogPostListModel {
     title: string;
     url: string;
     description: string;
@@ -15,6 +15,28 @@ export interface IBlogPost {
     readCnt: number;
     commentCnt: number;
     author: string;
+    id: string;
+}
+
+export interface IBlogPostDetailModel {
+    title: string;
+    content: string;
+    postTime: Date;
+    readCnt: number;
+    commentCnt: number;
+    diggCnt: number;
+    buryCnt: number;
+    id: string;
+}
+
+export interface ICommentModel {
+    id: string;
+    reviewerName: string;
+    reviewerId: string;
+    content: string;
+    diggCnt: number;
+    buryCnt: number;
+    time: Date;
 }
 
 export interface IUserProfile {
@@ -40,10 +62,9 @@ export interface IRecentComment {
 }
 
 
-export const getBlogPostList = () => {
-    const postEls: HTMLDivElement[] = Array.from(document.querySelectorAll('.forFlow .postTitle,.postCon,.postDesc'));
+export const getBlogPostList = (doc: ParentNode) => {
+    const postEls: HTMLDivElement[] = Array.from(doc.querySelectorAll('.forFlow .postTitle,.postCon,.postDesc'));
     const posts = processPostEl(postEls);
-    localStorage.setItem('app-posts', JSON.stringify(posts));
     return posts;
 }
 
@@ -72,6 +93,22 @@ export const getBlogStats = (): IBlogStats => {
     return stats;
 }
 
+export const getPostDetail = (doc: ParentNode) => {
+    const content = doc.querySelector('#cnblogs_post_body')!.innerHTML;
+    const titleEl = doc.querySelector('#cb_post_title_url')! as HTMLAnchorElement;
+    const title = titleEl.innerText.trim();
+    const timeEl = doc.querySelector('#post-date')! as HTMLSpanElement;
+    const postTime = new Date(timeEl.innerText);
+    const getCntById = (id: string) => {
+        const el = doc.querySelector(id)! as HTMLSpanElement;
+        return parseInt(el.innerText, 10);
+    }
+    const readCnt = getCntById('#post_view_count');
+    const commentCnt = getCntById('#post_comment_count');
+    const diggCnt = getCntById('#digg_count');
+    const buryCnt = getCntById('#bury_count');
+}
+
 const getCnt = (str: string) => {
     const getNum = /\d+/;
     const res = getNum.exec(str);
@@ -81,12 +118,14 @@ const getCnt = (str: string) => {
     return 0;
 }
 
-const processPostEl = (postEls: HTMLDivElement[]): IBlogPost[] => {
+const processPostEl = (postEls: HTMLDivElement[]): IBlogPostListModel[] => {
     const result = [];
     for (let index = 0; index < postEls.length; index += 3) {
         const titleEl = postEls[index];
-        const title = titleEl.innerText;
+        const title = titleEl.innerText.trim();
         const url = titleEl.querySelector('a')!.href;
+        const idStr = url.replace('.html', '');
+        const id = idStr.substring(idStr.lastIndexOf('/') + 1);
         const conEl = postEls[index + 1];
         const description = conEl.innerText.substr(0, conEl.innerText.length - 4);
         const misc = postEls[index + 2].innerText.split(' ');
@@ -96,7 +135,7 @@ const processPostEl = (postEls: HTMLDivElement[]): IBlogPost[] => {
         const readCnt = getCnt(misc[5]);
         const commentCnt = getCnt(misc[6]);
         const post = {
-            title, url, description, postTime: date, readCnt, commentCnt, author
+            title, url, description, postTime: date, readCnt, commentCnt, author, id
         };
         result.push(post);
 
@@ -209,15 +248,25 @@ const getDataContainerAsync = (selector: string) => {
     })
 }
 
+function getParameterByName(name: string, url: string) {
+    if (!url) url = window.location.href;
+    name = name.replace(/[\[\]]/g, '\\$&');
+    var regex = new RegExp('[?&]' + name + '(=([^&#]*)|&|#|$)'),
+        results = regex.exec(url);
+    if (!results) return null;
+    if (!results[2]) return '';
+    return decodeURIComponent(results[2].replace(/\+/g, ' '));
+}
+
 export class CnblogsBridge {
     data!: {
-        posts: IBlogPost[];
+        posts: IBlogPostListModel[];
         stats: IBlogStats;
         title: string;
         subTitle: string;
     };
     constructor() {
-        const posts = getBlogPostList();
+        const posts = getBlogPostList(document);
         const stats = getBlogStats();
         const title = getBlogTitle();
         const subTitle = getSubTitle();
@@ -289,6 +338,35 @@ export class CnblogsBridge {
 
     getTopDiggPosts() {
         return this.getDataAsync('app-top-digg-posts', '#TopDiggPostsBlock ul', processItemsWithCntOrderEl);
+    }
+
+    get currentPage() {
+        const param = getParameterByName('page', window.location.href) || '1';
+        return parseInt(param, 10);
+    }
+
+    get blogApp() {
+        return (window as any)['currentBlogApp'] as string;
+    }
+
+    getPostListAt(page: number) {
+        const baseUrl = `//www.cnblogs.com/${this.blogApp}/?page=${page}`;
+        const result =
+            fetch(baseUrl, {
+                method: 'GET',
+                credentials: 'include'
+            })
+                .then(resp => resp.text())
+                .then(txt => {
+                    const temp = document.createElement('template');
+                    temp.innerHTML = txt;
+                    return getBlogPostList(temp.content);
+                });
+        return result;
+    }
+
+    getPostDetail(url: string) {
+
     }
 
 }
